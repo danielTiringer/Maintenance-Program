@@ -4,7 +4,7 @@
   "description": "Tracker for maintenance of assets.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha || true",
     "start": "node server/index.js",
     "dev": "nodemon server/index.js"
   },
@@ -20,6 +20,8 @@
     "nodemailer": "^6.4.2"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0",
     "nodemon": "^2.0.2"
   }
 }
