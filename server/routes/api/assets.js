@@ -1,7 +1,10 @@
 const express = require('express');
 const mongodb = require('mongodb');
+const dotenv = require('dotenv');
 
 const router = express.Router();
+
+dotenv.config();
 
 // Get Assets
 
@@ -45,20 +48,10 @@ router.put('/:id', async (req, res) => {
 	res.status(200).send();
 });
 
-// Complete Assets
-router.put('/:id/complete', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.updateOne(
-		{ _id: new mongodb.ObjectID(req.params.id) },
-		{ $set: { status: 'complete' } }
-	);
-	res.status(200).send();
-});
-
 
 // Router Connection
 async function loadAssetsCollection() {
-	const client = await mongodb.MongoClient.connect('mongodb+srv://generic:Password123@cluster0-99drl.mongodb.net/test?retryWrites=true&w=majority', {
+	const client = await mongodb.MongoClient.connect(process.env.DB_HOST, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	});
