@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 	res.send(await assets.find({}).toArray());
 })
 
-// Add Assets
+// Add Asset
 router.post('/', async (req, res) => {
 	const assets = await loadAssetsCollection();
 	await assets.insertOne({
@@ -25,19 +25,26 @@ router.post('/', async (req, res) => {
 		description: req.body.description,
 		maintenanceSchedule: req.body.mainenanceSchedule,
 		nextScheduledDate: req.body.nextScheduledDate,
+		maintenanceLog: [],
 		createdAt: new Date()
 	});
 	res.status(201).send();
 });
 
-// Delete Assets
+// Get Single Asset
+router.get('/:id', async (req, res) => {
+	const assets = await loadAssetsCollection();
+	res.send(await assets.findOne({ _id: new mongodb.ObjectID(req.params.id) }))
+})
+
+// Delete Asset
 router.delete('/:id', async (req, res) => {
 	const assets = await loadAssetsCollection();
 	await assets.deleteOne({ _id: new mongodb.ObjectID(req.params.id) });
 	res.status(200).send();
 });
 
-// Modify Assets
+// Modify Asset
 router.put('/:id', async (req, res) => {
 	const assets = await loadAssetsCollection();
 	await assets.updateOne(
