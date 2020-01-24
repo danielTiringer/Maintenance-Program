@@ -6,6 +6,8 @@ const router = express.Router();
 
 dotenv.config();
 
+
+// Main Asset Endpoints
 // Get Assets
 
 router.get('/', async (req, res) => {
@@ -21,9 +23,9 @@ router.post('/', async (req, res) => {
 		serialNumber: req.body.serialNumber,
 		dateOfInstall: req.body.dateOfInstall,
 		address: req.body.address,
-		contacts: req.body.contacts,
+		contacts: [],
 		description: req.body.description,
-		maintenanceSchedule: req.body.mainenanceSchedule,
+		maintenanceSchedule: req.body.maintenanceSchedule,
 		nextScheduledDate: req.body.nextScheduledDate,
 		maintenanceLog: [],
 		createdAt: new Date()
@@ -54,6 +56,11 @@ router.put('/:id', async (req, res) => {
 	console.log(res);
 	res.status(200).send();
 });
+
+// Asset Contact Endpoints
+
+
+// Asset Maintenance Endpoints
 
 
 // Router Connection
