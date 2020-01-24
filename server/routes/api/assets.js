@@ -8,6 +8,7 @@ dotenv.config();
 
 
 // Main Asset Endpoints
+
 // Get Assets
 
 router.get('/', async (req, res) => {
@@ -37,7 +38,7 @@ router.post('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
 	const assets = await loadAssetsCollection();
 	res.send(await assets.findOne({ _id: new mongodb.ObjectID(req.params.id) }))
-})
+});
 
 // Delete Asset
 router.delete('/:id', async (req, res) => {
@@ -53,15 +54,63 @@ router.put('/:id', async (req, res) => {
 		{ _id: new mongodb.ObjectID(req.params.id) },
 		{ $set: req.body }
 	);
-	console.log(res);
 	res.status(200).send();
 });
 
+
 // Asset Contact Endpoints
+
+// Add Contact
+router.post('/:id/contact', async (req, res) => {
+	const assets = await loadAssetsCollection();
+	await assets.updateOne(
+		{ _id: new mongodb.ObjectID(req.params.id) },
+		{
+			$push: {
+				contacts: {
+					$each: [{
+						name: req.body.name,
+						title: req.body.title || '',
+						phone: req.body.phone,
+						email: req.body.email,
+						createdAt: new Date()
+					}],
+					$position: 0
+				},
+			}
+		}
+	);
+	res.status(201).send();
+})
+
+// Delete Contact
+
+// Update Contact
 
 
 // Asset Maintenance Endpoints
 
+// Add Maintenance
+router.post('/:id/maintenance', async (req, res) => {
+	const assets = await loadAssetsCollection();
+	await assets.updateOne(
+		{ _id: new mongodb.ObjectID(req.params.id) },
+		{
+			$push: {
+				maintenanceLog: {
+					$each: [{
+						date: req.body.date,
+						errorDescription: req.body.errorDescription,
+						maintenanceDescription: req.body.maintenanceDescription,
+						createdAt: new Date()
+					}],
+					$position: 0
+				},
+			}
+		}
+	);
+	res.status(201).send();
+})
 
 // Router Connection
 async function loadAssetsCollection() {
