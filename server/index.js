@@ -18,6 +18,16 @@ app.use(cors());
 const assets = require('./routes/api/assets');
 app.use('/api/assets', assets);
 
+// Handling production
+if(process.env.NODE_ENV === 'production') {
+	// Set static folder
+	app.use(express.static(__dirname + '/public/'));
+
+	// Handle single page app
+	app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html');)
+}
+
+
 // Scheduled tasks
 // CRON scheduled to run at 07:30 AM on each weekday
 const queryDueMaintenance = cron.schedule('00 30 07 * * 1-5', async () => {
