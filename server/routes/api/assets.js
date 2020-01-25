@@ -114,11 +114,11 @@ router.post('/:id/maintenance', async (req, res) => {
 
 // Router Connection
 async function loadAssetsCollection() {
-	const client = await mongodb.MongoClient.connect('mongodb+srv://generic:Password123@cluster0-99drl.mongodb.net/test?retryWrites=true&w=majority', {
+	const client = await mongodb.MongoClient.connect(process.env.DB_HOST, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	});
-
+	console.log('MongoDB database connected.')
 	return client.db('Maintenance-Program').collection('assets');
 }
 
