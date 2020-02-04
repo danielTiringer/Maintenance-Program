@@ -18,13 +18,16 @@ app.use(cors());
 const assets = require('./routes/api/assets');
 app.use('/api/assets', assets);
 
+const clients = require('./routes/api/clients');
+app.use('/api/clients', clients);
+
 // Handling production
 if(process.env.NODE_ENV === 'production') {
 	// Set static folder
 	app.use(express.static(__dirname + '/public/'));
 
 	// Handle single page app
-	app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html');)
+	app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
 }
 
 
