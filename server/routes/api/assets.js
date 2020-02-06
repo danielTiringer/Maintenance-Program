@@ -23,6 +23,8 @@ router.post('/', async (req, res) => {
 		assetId: req.body.assetId,
 		serialNumber: req.body.serialNumber,
 		dateOfInstall: req.body.dateOfInstall,
+		zip: req.body.zip,
+		city: req.body.city,
 		address: req.body.address,
 		description: req.body.description,
 		maintenanceSchedule: req.body.maintenanceSchedule,
@@ -71,6 +73,7 @@ router.post('/:id/maintenance', async (req, res) => {
 						date: req.body.date,
 						errorDescription: req.body.errorDescription,
 						maintenanceDescription: req.body.maintenanceDescription,
+						completed: req.body.completed,
 						createdAt: new Date()
 					}],
 					$position: 0
