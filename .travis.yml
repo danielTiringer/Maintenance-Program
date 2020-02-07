@@ -1,10 +1,23 @@
-language: bash
+branches:
+  only:
+    - master
+    - development
+
+language: node_js
+node_js:
+  - "13.2.0"
 
 sudo: required
 
 services:
   -docker
 
-script:
+before_install:
+  sudo apt update
+  sudo apt -yy upgrade
+
+before_script:
   npm install
+
+script:
   npm run test

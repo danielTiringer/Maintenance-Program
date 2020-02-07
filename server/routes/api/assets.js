@@ -23,8 +23,9 @@ router.post('/', async (req, res) => {
 		assetId: req.body.assetId,
 		serialNumber: req.body.serialNumber,
 		dateOfInstall: req.body.dateOfInstall,
+		zip: req.body.zip,
+		city: req.body.city,
 		address: req.body.address,
-		contacts: [],
 		description: req.body.description,
 		maintenanceSchedule: req.body.maintenanceSchedule,
 		nextScheduledDate: req.body.nextScheduledDate,
@@ -58,36 +59,6 @@ router.put('/:id', async (req, res) => {
 });
 
 
-// Asset Contact Endpoints
-
-// Add Contact
-router.post('/:id/contact', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.updateOne(
-		{ _id: new mongodb.ObjectID(req.params.id) },
-		{
-			$push: {
-				contacts: {
-					$each: [{
-						name: req.body.name,
-						title: req.body.title || '',
-						phone: req.body.phone,
-						email: req.body.email,
-						createdAt: new Date()
-					}],
-					$position: 0
-				},
-			}
-		}
-	);
-	res.status(201).send();
-})
-
-// Delete Contact
-
-// Update Contact
-
-
 // Asset Maintenance Endpoints
 
 // Add Maintenance
@@ -102,6 +73,7 @@ router.post('/:id/maintenance', async (req, res) => {
 						date: req.body.date,
 						errorDescription: req.body.errorDescription,
 						maintenanceDescription: req.body.maintenanceDescription,
+						completed: req.body.completed,
 						createdAt: new Date()
 					}],
 					$position: 0
@@ -111,6 +83,17 @@ router.post('/:id/maintenance', async (req, res) => {
 	);
 	res.status(201).send();
 })
+
+// Update Maintenance
+router.put('/:id/maintenance/:position', async (req, res) => {
+	const assets = await loadAssetsCollection();
+	await assets.updateOne(
+		{ _id: new mongodb.ObjectID(req.params.id) },
+		{ $set: { [`maintenanceLog.${req.params.position}`]: req.body } }
+	);
+	res.status(200).send();
+});
+
 
 // Router Connection
 async function loadAssetsCollection() {

@@ -1,10 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 const cron = require('node-cron');
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 const port = process.env.PORT || 5000;
 const dotenv = require('dotenv');
+const passport = require('passport');
 
 const app = express();
 dotenv.config();
@@ -14,9 +15,18 @@ dotenv.config();
 app.use(express.json());
 app.use(cors());
 
+app.use(passport.initialize());
+require('./config/passport')(passport);
+
 // Routes
 const assets = require('./routes/api/assets');
 app.use('/api/assets', assets);
+
+const clients = require('./routes/api/clients');
+app.use('/api/clients', clients);
+
+const users = require('./routes/api/users');
+app.use('/api/users', users);
 
 // Handling production
 if(process.env.NODE_ENV === 'production') {
@@ -26,7 +36,6 @@ if(process.env.NODE_ENV === 'production') {
 	// Handle single page app
 	app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'));
 }
-
 
 // Scheduled tasks
 // CRON scheduled to run at 07:30 AM on each weekday
@@ -105,7 +114,7 @@ transporter.verify((error, success) => {
 	if (error) {
 		console.log(error);
 	} else {
-		console.log('Nodemailer is ready to send messages');
+		console.log('Nodemailer is ready to send messages.');
 	}
 });
 
