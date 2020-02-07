@@ -63,12 +63,12 @@ router.post('/register', (req, res) => {
 
 // Log the User In
 router.post('/login', (req, res) => {
-	User.findOne({ username: req.body.username })
+	User.findOne({ email: req.body.email })
 		.then(user => {
 			if (!user) {
 				return res.status(404).json({
 					success: false,
-					msg: 'Username not found.'
+					msg: 'Email not found.'
 				})
 			}
 			// Compare password
@@ -89,6 +89,7 @@ router.post('/login', (req, res) => {
 							res.status(200).json({
 								success: true,
 								token: `Bearer ${token}`,
+								user: user,
 								msg: 'You are now logged in.'
 							})
 						})
