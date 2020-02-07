@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 const cron = require('node-cron');
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 const port = process.env.PORT || 5000;
 const dotenv = require('dotenv');
 const passport = require('passport');
@@ -115,7 +115,7 @@ transporter.verify((error, success) => {
 	if (error) {
 		console.log(error);
 	} else {
-		console.log('Nodemailer is ready to send messages');
+		console.log('Nodemailer is ready to send messages.');
 	}
 });
 
