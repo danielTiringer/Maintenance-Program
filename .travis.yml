@@ -1,13 +1,21 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+- stable
+services:
+- docker
+notifications:
+  email:
+    recipients:
+    - tiringerdaniel@gmail.com
+    on_success: change
+    on_failure: always
+
 branches:
   only:
     - master
     - development
-
-language: node_js
-node_js:
-  - "13.2.0"
-
-sudo: required
 
 services:
   -docker
@@ -21,3 +29,14 @@ before_script:
 
 script:
   npm run test
+
+after_success:
+  if [ "$TRAVIS_BRANCH" == "master" ]; then
+    npm run build;
+
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+
+    export REPO=danieltiringer/maintenance-program;
+    docker build -f Dockerfile -t $REPO .;
+    docker push $REPO;
+  fi
