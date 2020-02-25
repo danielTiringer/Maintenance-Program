@@ -20,10 +20,6 @@ branches:
 services:
   -docker
 
-before_install:
-  sudo apt update
-  sudo apt -yy upgrade
-
 before_script:
   npm install
 
