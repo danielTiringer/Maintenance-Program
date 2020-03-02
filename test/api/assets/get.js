@@ -21,9 +21,9 @@ describe('GET /api/assets', function() {
 
 	it('OK, getting items show no items.', function(done) {
 		request(app).get('/api/assets')
-			.then((res) => {
-				expect(res.status).to.equal(200)
-				expect(res.body.data.length).to.equal(0)
+			.then(res => {
+				expect(res.status).to.equal(200);
+				expect(res.body.data.length).to.equal(0);
 				done();
 			})
 			.catch((err) => done(err));
@@ -42,15 +42,41 @@ describe('GET /api/assets', function() {
 				"maintenanceSchedule": "annual",
 				"nextScheduledDate": "2020/02/28"
 			})
-			.then(() => {
-				request(app).get('/api/assets')
-				.then((res) => {
-					expect(res.status).to.equal(200);
-					expect(res.body.data.length).to.equal(1)
+			.then(res => {
+				request(app).get(`/api/assets/${res.body.data._id}`)
+				.then(response => {
+					expect(response.status).to.equal(200);
+					expect(response.body.success).to.equal(true);
+					expect(response.body.data).to.be.an('object');
 					done();
 				})
 			})
 			.catch((err) => done(err));
+	})
+
+	it('OK, single GET request return the correct asset.', function(done) {
+		request(app).post('/api/assets')
+			.send({
+				"assetId": "door452",
+				"serialNumber": "bestdoor999",
+				"dateOfInstall": "2017/01/24",
+				"zip": "2030",
+				"city": "Erd",
+				"address": "Bella u. 8",
+				"description": "Back door of the supermarket",
+				"maintenanceSchedule": "annual",
+				"nextScheduledDate": "2020/02/28"
+			})
+			.then(res => {
+				request(app).get(`/api/assets/${res.body.data._id}`)
+					.then(response => {
+						expect(response.status).to.equal(200);
+						expect(response.body.success).to.equal(true);
+						expect(response.body.data).to.be.an('object');
+						done();
+					})
+				})
+				.catch((err) => done(err));
 	})
 
 })

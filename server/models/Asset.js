@@ -19,7 +19,13 @@ const AssetSchema = new Schema({
 	},
 	zip: {
 		type: Number,
-		required: [true, 'Please add the Postal Code.']
+		min: 1000,
+		max: 9999,
+		required: [true, 'Please add the Postal Code.'],
+		validate : {
+			validator : Number.isInteger,
+			message   : '{VALUE} is not an integer value.'
+		}
 	},
 	city: {
 		type: String,
@@ -38,7 +44,7 @@ const AssetSchema = new Schema({
 	},
 	maintenanceSchedule: {
 		type: String,
-		trim: true,
+		enum: ['annual', 'semi-annual'],
 		required: [true, 'Please add the Maintenance Schedule.']
 	},
 	nextScheduledDate: {

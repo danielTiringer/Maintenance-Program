@@ -47,10 +47,21 @@ router.post('/', (req, res) => {
 			success: true,
 			data: item
 		}))
-		.catch(err => res.status(400).json({
-			success: false,
-			message: err
-		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
+			}
+
+		})
 });
 
 // @route		GET api/assets/:id
@@ -97,10 +108,20 @@ router.put('/:id', (req, res) => {
 			success: true,
 			data: item
 		}))
-		.catch(err => res.status(404).json({
-			success: false,
-			message: err
-		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
+			}
+		})
 });
 
 
