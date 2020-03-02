@@ -12,6 +12,8 @@ async function connect() {
 		mongoServer = new mongoMemoryServer({ debug: true });
 		const mongoUri = await mongoServer.getUri();
 		await mongoose.connect(mongoUri, {
+			useFindAndModify: false,
+			useCreateIndex: true,
 			useNewUrlParser: true,
 			useUnifiedTopology: true
 		})
@@ -20,6 +22,8 @@ async function connect() {
 			})
 	} else {
 		await mongoose.connect(process.env.DB_HOST, {
+			useFindAndModify: false,
+			useCreateIndex: true,
 			useNewUrlParser: true,
 			useUnifiedTopology: true
 		})

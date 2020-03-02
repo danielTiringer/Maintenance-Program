@@ -1,4 +1,6 @@
 process.env.NODE_ENV = 'test';
+// Synchronize tests between local computer and MongoDB Atlas.
+process.env.TZ = 'Europe/London';
 
 const expect = require('chai').expect;
 const request = require('supertest');
@@ -42,7 +44,7 @@ describe('POST /api/assets', function() {
 				expect(res.body.data).to.contain.property('serialNumber');
 				expect(res.body.data.serialNumber).to.equal('bestdoor999');
 				expect(res.body.data).to.contain.property('dateOfInstall');
-				expect(res.body.data.dateOfInstall.substring(0, 10)).to.equal('2017-01-23');
+				expect(res.body.data.dateOfInstall.substring(0, 10)).to.equal('2017-01-24');
 				expect(res.body.data).to.contain.property('zip');
 				expect(res.body.data.zip).to.equal(2030);
 				expect(res.body.data).to.contain.property('city');
@@ -54,7 +56,7 @@ describe('POST /api/assets', function() {
 				expect(res.body.data).to.contain.property('maintenanceSchedule');
 				expect(res.body.data.maintenanceSchedule).to.equal('annual');
 				expect(res.body.data).to.contain.property('nextScheduledDate');
-				expect(res.body.data.nextScheduledDate.substring(0, 10)).to.equal('2020-02-27');
+				expect(res.body.data.nextScheduledDate.substring(0, 10)).to.equal('2020-02-28');
 				expect(res.body.data.maintenanceLog).to.be.an('array');
 				expect(res.body.data.maintenanceLog.length).to.equal(0);
 				expect(res.body.data).to.contain.property('date');

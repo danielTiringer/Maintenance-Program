@@ -9,6 +9,8 @@ const router = express.Router();
 
 dotenv.config({ path: './server/config/config.env' });
 
+const jwtKey = process.env.SECRET || 'testkey';
+
 // User endpoints
 
 // @route		POST api/users/register
@@ -18,27 +20,10 @@ router.post('/register', (req, res) => {
 	let { name, username, email, password, confirm_password } = req.body;
 	if (password !== confirm_password) {
 		return res.status(400).json({
+			success: false,
 			message: 'The passwords did not match!'
 		})
 	} else {
-		// Verify if username is unique
-		User.findOne({ username: username })
-			.then(user => {
-				if (user) {
-					return res.status(400).json({
-						message: 'Username already in use.'
-					})
-				}
-			})
-		// Verify if email is unique
-		User.findOne({ email: email })
-			.then(user => {
-				if (user) {
-					return res.status(400).json({
-						message: 'Email already registered.'
-					})
-				}
-			})
 		// Register user
 		let newUser = new User({
 			name,
@@ -51,12 +36,29 @@ router.post('/register', (req, res) => {
 			bcrypt.hash(newUser.password, salt, (err, hash) => {
 				if (err) { throw err; }
 				newUser.password = hash;
-				newUser.save().then(() => {
-					return res.status(201).json({
-						success: true,
-						message: 'User registered.'
+				newUser
+					.save()
+					.then(() => {
+						return res.status(201).json({
+							success: true,
+							message: 'User registered.'
+						})
 					})
-				})
+					.catch(err => {
+						if (err.name === 'ValidationError') {
+							const messages = Object.values(err.errors).map(val => val.message);
+							return res.status(400).json({
+								success: false,
+								error: messages
+							});
+						} else {
+							return res.status(500).json({
+								success: false,
+								error: 'Server error.'
+							})
+						}
+
+					})
 			})
 		})
 	}
@@ -86,7 +88,7 @@ router.post('/login', (req, res) => {
 							email: user.email
 						};
 
-						jwt.sign(payload, process.env.SECRET, {
+						jwt.sign(payload, jwtKey, {
 							expiresIn: 3600
 						}, (err, token) => {
 							res.status(200).json({
