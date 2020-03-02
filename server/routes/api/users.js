@@ -1,23 +1,25 @@
 const express = require('express');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const dotenv = require('dotenv');
-const User = require('../../model/User');
+const User = require('../../models/User');
 
 const router = express.Router();
 
-dotenv.config();
+dotenv.config({ path: './server/config/config.env' });
 
-// User Endpoints
+// User endpoints
 
-// Register the User
+// @route		POST api/users/register
+// @desc		Register a new user
+// @access	Public
 router.post('/register', (req, res) => {
 	let { name, username, email, password, confirm_password } = req.body;
 	if (password !== confirm_password) {
 		return res.status(400).json({
-			msg: 'The passwords did not match!'
+			message: 'The passwords did not match!'
 		})
 	} else {
 		// Verify if username is unique
@@ -25,7 +27,7 @@ router.post('/register', (req, res) => {
 			.then(user => {
 				if (user) {
 					return res.status(400).json({
-						msg: 'Username already in use.'
+						message: 'Username already in use.'
 					})
 				}
 			})
@@ -34,7 +36,7 @@ router.post('/register', (req, res) => {
 			.then(user => {
 				if (user) {
 					return res.status(400).json({
-						msg: 'Email already registered.'
+						message: 'Email already registered.'
 					})
 				}
 			})
@@ -53,7 +55,7 @@ router.post('/register', (req, res) => {
 				newUser.save().then(user => {
 					return res.status(201).json({
 						success: true,
-						msg: 'User registered.'
+						message: 'User registered.'
 					})
 				})
 			})
@@ -61,14 +63,16 @@ router.post('/register', (req, res) => {
 	}
 })
 
-// Log the User In
+// @route		POST api/users/login
+// @desc		Log the user in
+// @access	Private
 router.post('/login', (req, res) => {
 	User.findOne({ email: req.body.email })
 		.then(user => {
 			if (!user) {
 				return res.status(404).json({
 					success: false,
-					msg: 'Email not found.'
+					message: 'Email not found.'
 				})
 			}
 			// Compare password
@@ -90,20 +94,22 @@ router.post('/login', (req, res) => {
 								success: true,
 								token: `Bearer ${token}`,
 								user: user,
-								msg: 'You are now logged in.'
+								message: 'You are now logged in.'
 							})
 						})
 					} else {
 						return res.status(404).json({
 							success: false,
-							msg: 'Incorrect password.'
+							message: 'Incorrect password.'
 						})
 					}
 				})
 		})
 })
 
-// User Data Page
+// @route		GET api/users/profile
+// @desc		Get user data page
+// @access	Private
 router.get('/profile', passport.authenticate('jwt', {
 	session: false
 }), (req, res) => {
@@ -111,14 +117,5 @@ router.get('/profile', passport.authenticate('jwt', {
 		user: req.user
 	});
 })
-
-
-// Connect to MongoDB
-mongoose.connect(process.env.DB_HOST, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-})
-	.then(() => console.log('MongoDB connected.'))
-	.catch(error => console.log(error))
 
 module.exports = router;
