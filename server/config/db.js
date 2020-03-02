@@ -9,7 +9,7 @@ dotenv.config({ path: './server/config/config.env' })
 // Connect to MongoDB
 async function connect() {
 	if (process.env.NODE_ENV === 'test') {
-		mongoServer = new mongoMemoryServer();
+		mongoServer = new mongoMemoryServer({ debug: true });
 		const mongoUri = await mongoServer.getUri();
 		await mongoose.connect(mongoUri, {
 			useNewUrlParser: true,
