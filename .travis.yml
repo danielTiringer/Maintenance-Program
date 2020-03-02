@@ -1,23 +1,53 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+  - stable
+
+notifications:
+  email:
+    recipients:
+    - tiringerdaniel@gmail.com
+    on_success: change
+    on_failure: always
+
+addons:
+apt:
+  sources:
+  - google-chrome
+  packages:
+  - google-chrome-stable
+before_install:
+- export CHROME_BIN=chromium-browser
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+
+services:
+  -docker
+
+cache: npm
+
 branches:
   only:
     - master
     - development
 
-language: node_js
-node_js:
-  - "13.2.0"
-
-sudo: required
-
-services:
-  -docker
-
-before_install:
-  sudo apt update
-  sudo apt -yy upgrade
-
 before_script:
   npm install
 
-script:
-  npm run test
+jobs:
+  include:
+    - stage: Lint
+      script: npm run lint
+    - stage: Test
+      script: npm run test
+
+after_success:
+  if [ "$TRAVIS_BRANCH" == "master" ]; then
+    npm run build;
+
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+
+    docker build -f Dockerfile -t "$DOCKER_REPO" .;
+    docker push "$DOCKER_REPO";
+  fi

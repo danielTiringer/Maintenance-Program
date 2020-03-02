@@ -52,7 +52,7 @@ router.post('/register', (req, res) => {
 			bcrypt.hash(newUser.password, salt, (err, hash) => {
 				if (err) { throw err; }
 				newUser.password = hash;
-				newUser.save().then(user => {
+				newUser.save().then(() => {
 					return res.status(201).json({
 						success: true,
 						message: 'User registered.'

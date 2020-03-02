@@ -1,15 +1,18 @@
 const fetch = require('node-fetch');
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
+dotenv.config({ path: './server/config/config.env' })
 
 // Scheduled tasks
 // CRON scheduled to run at 07:30 AM on each weekday
+// eslint-disable-next-line no-unused-vars
 const queryDueMaintenance = cron.schedule('00 30 07 * * 1-5', async () => {
 
 // CRON for testing only
 // const queryDueMaintenance = cron.schedule('* * * * *', async () => {
 	console.log("Running a task every X time.");
-	const response = await fetch(`http://localhost:${port}/api/assets`, {
+	const response = await fetch(`http://localhost:${process.env.PORT}/api/assets`, {
 		method:'GET',
 		headers: {
 			'Accept': 'application/json',
@@ -53,6 +56,7 @@ const queryDueMaintenance = cron.schedule('00 30 07 * * 1-5', async () => {
 		html: messageHTML
 
 	};
+// eslint-disable-next-line no-unused-vars
 	transporter.sendMail(mailOptions, function(error, info) {
 		if (error) {
 			throw error;
@@ -75,6 +79,7 @@ let transporter = nodemailer.createTransport({
 	}
 });
 
+// eslint-disable-next-line no-unused-vars
 transporter.verify((error, success) => {
 	if (error) {
 		console.log(error);
