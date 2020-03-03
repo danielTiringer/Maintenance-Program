@@ -1,25 +1,34 @@
 const express = require('express');
-const mongodb = require('mongodb');
 const dotenv = require('dotenv');
+const Asset = require('../../models/Asset');
 
 const router = express.Router();
 
-dotenv.config();
-
+dotenv.config({ path: './server/config/config.env' });
 
 // Main Asset Endpoints
 
-// Get Assets
-
-router.get('/', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	res.send(await assets.find({}).toArray());
+// @route		GET api/assets
+// @desc		Get assets
+// @access	Private
+router.get('/', (req, res) => {
+	Asset.find()
+		.sort({ dateOfInstall: 1 })
+		.then(items => res.status(200).json({
+			success: true,
+			data: items
+		}))
+		.catch(err => res.status(400).json({
+			success: false,
+			message: err
+		}))
 })
 
-// Add Asset
-router.post('/', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.insertOne({
+// @route		POST api/assets
+// @desc		Add asset
+// @access	Private
+router.post('/', (req, res) => {
+	const newAsset = new Asset({
 		assetId: req.body.assetId,
 		serialNumber: req.body.serialNumber,
 		dateOfInstall: req.body.dateOfInstall,
@@ -32,77 +41,134 @@ router.post('/', async (req, res) => {
 		maintenanceLog: [],
 		createdAt: new Date()
 	});
-	res.status(201).send();
-});
 
-// Get Single Asset
-router.get('/:id', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	res.send(await assets.findOne({ _id: new mongodb.ObjectID(req.params.id) }))
-});
-
-// Delete Asset
-router.delete('/:id', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.deleteOne({ _id: new mongodb.ObjectID(req.params.id) });
-	res.status(200).send();
-});
-
-// Modify Asset
-router.put('/:id', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.updateOne(
-		{ _id: new mongodb.ObjectID(req.params.id) },
-		{ $set: req.body }
-	);
-	res.status(200).send();
-});
-
-
-// Asset Maintenance Endpoints
-
-// Add Maintenance
-router.post('/:id/maintenance', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.updateOne(
-		{ _id: new mongodb.ObjectID(req.params.id) },
-		{
-			$push: {
-				maintenanceLog: {
-					$each: [{
-						date: req.body.date,
-						errorDescription: req.body.errorDescription,
-						maintenanceDescription: req.body.maintenanceDescription,
-						completed: req.body.completed,
-						createdAt: new Date()
-					}],
-					$position: 0
-				},
+	newAsset.save()
+		.then(item => res.status(201).json({
+			success: true,
+			data: item
+		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
 			}
-		}
-	);
-	res.status(201).send();
-})
 
-// Update Maintenance
-router.put('/:id/maintenance/:position', async (req, res) => {
-	const assets = await loadAssetsCollection();
-	await assets.updateOne(
-		{ _id: new mongodb.ObjectID(req.params.id) },
-		{ $set: { [`maintenanceLog.${req.params.position}`]: req.body } }
-	);
-	res.status(200).send();
+		})
+});
+
+// @route		GET api/assets/:id
+// @desc		Get single asset
+// @access	Private
+router.get('/:id', (req, res) => {
+	Asset.findById(req.params.id)
+		.then(item => res.status(200).json({
+			success: true,
+			data: item
+		}))
+		.catch(err => res.status(404).json({
+			success: false,
+			message: err
+		}))
+});
+
+// @route		DELETE api/assets/:id
+// @desc		Delete asset
+// @access	Private
+router.delete('/:id', (req, res) => {
+	Asset.findById(req.params.id)
+		.then(asset => asset.remove()
+		.then(() => res.json({
+			success: true,
+			data: {}
+		})))
+		.catch(err => res.status(404).json({
+			success: false,
+			message: err
+		}))
+});
+
+// @route		PUT api/assets/:id
+// @desc		Modify asset
+// @access	Private
+router.put('/:id', (req, res) => {
+	Asset.updateOne(
+		{ _id: req.params.id },
+		{ $set: req.body },
+		{ runValidators: true }
+	)
+		.then(item => res.status(200).json({
+			success: true,
+			data: item
+		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
+			}
+		})
 });
 
 
-// Router Connection
-async function loadAssetsCollection() {
-	const client = await mongodb.MongoClient.connect(process.env.DB_HOST, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	});
-	console.log('MongoDB database connected.')
-	return client.db('Maintenance-Program').collection('assets');
-}
+// // Asset Maintenance Endpoints
+
+// // Add Maintenance
+// router.post('/:id/maintenance', async (req, res) => {
+// 	const assets = await loadAssetsCollection();
+// 	await assets.updateOne(
+// 		{ _id: new mongodb.ObjectID(req.params.id) },
+// 		{
+// 			$push: {
+// 				maintenanceLog: {
+// 					$each: [{
+// 						date: req.body.date,
+// 						errorDescription: req.body.errorDescription,
+// 						maintenanceDescription: req.body.maintenanceDescription,
+// 						completed: req.body.completed,
+// 						createdAt: new Date()
+// 					}],
+// 					$position: 0
+// 				},
+// 			}
+// 		}
+// 	);
+// 	res.status(201).send();
+// })
+
+// // Update Maintenance
+// router.put('/:id/maintenance/:position', async (req, res) => {
+// 	const assets = await loadAssetsCollection();
+// 	await assets.updateOne(
+// 		{ _id: new mongodb.ObjectID(req.params.id) },
+// 		{ $set: { [`maintenanceLog.${req.params.position}`]: req.body } }
+// 	);
+// 	res.status(200).send();
+// });
+
+
+// // Router Connection
+// async function loadAssetsCollection() {
+// 	const client = await mongodb.MongoClient.connect(process.env.DB_HOST, {
+// 		useNewUrlParser: true,
+// 		useUnifiedTopology: true
+// 	});
+
+// 	return client.db('Maintenance-Program').collection('assets');
+// }
 
 module.exports = router;

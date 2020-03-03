@@ -1,43 +1,29 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const dotenv = require('dotenv');
-const User = require('../../model/User');
+const User = require('../../models/User');
 
 const router = express.Router();
 
-dotenv.config();
+dotenv.config({ path: './server/config/config.env' });
 
-// User Endpoints
+const jwtKey = process.env.SECRET || 'testkey';
 
-// Register the User
+// User endpoints
+
+// @route		POST api/users/register
+// @desc		Register a new user
+// @access	Public
 router.post('/register', (req, res) => {
 	let { name, username, email, password, confirm_password } = req.body;
 	if (password !== confirm_password) {
 		return res.status(400).json({
-			msg: 'The passwords did not match!'
+			success: false,
+			message: 'The passwords did not match!'
 		})
 	} else {
-		// Verify if username is unique
-		User.findOne({ username: username })
-			.then(user => {
-				if (user) {
-					return res.status(400).json({
-						msg: 'Username already in use.'
-					})
-				}
-			})
-		// Verify if email is unique
-		User.findOne({ email: email })
-			.then(user => {
-				if (user) {
-					return res.status(400).json({
-						msg: 'Email already registered.'
-					})
-				}
-			})
 		// Register user
 		let newUser = new User({
 			name,
@@ -50,25 +36,44 @@ router.post('/register', (req, res) => {
 			bcrypt.hash(newUser.password, salt, (err, hash) => {
 				if (err) { throw err; }
 				newUser.password = hash;
-				newUser.save().then(user => {
-					return res.status(201).json({
-						success: true,
-						msg: 'User registered.'
+				newUser
+					.save()
+					.then(() => {
+						return res.status(201).json({
+							success: true,
+							message: 'User registered.'
+						})
 					})
-				})
+					.catch(err => {
+						if (err.name === 'ValidationError') {
+							const messages = Object.values(err.errors).map(val => val.message);
+							return res.status(400).json({
+								success: false,
+								error: messages
+							});
+						} else {
+							return res.status(500).json({
+								success: false,
+								error: 'Server error.'
+							})
+						}
+
+					})
 			})
 		})
 	}
 })
 
-// Log the User In
+// @route		POST api/users/login
+// @desc		Log the user in
+// @access	Private
 router.post('/login', (req, res) => {
 	User.findOne({ email: req.body.email })
 		.then(user => {
 			if (!user) {
 				return res.status(404).json({
 					success: false,
-					msg: 'Email not found.'
+					message: 'Email not found.'
 				})
 			}
 			// Compare password
@@ -83,27 +88,29 @@ router.post('/login', (req, res) => {
 							email: user.email
 						};
 
-						jwt.sign(payload, process.env.SECRET, {
+						jwt.sign(payload, jwtKey, {
 							expiresIn: 3600
 						}, (err, token) => {
 							res.status(200).json({
 								success: true,
 								token: `Bearer ${token}`,
 								user: user,
-								msg: 'You are now logged in.'
+								message: 'You are now logged in.'
 							})
 						})
 					} else {
 						return res.status(404).json({
 							success: false,
-							msg: 'Incorrect password.'
+							message: 'Incorrect password.'
 						})
 					}
 				})
 		})
 })
 
-// User Data Page
+// @route		GET api/users/profile
+// @desc		Get user data page
+// @access	Private
 router.get('/profile', passport.authenticate('jwt', {
 	session: false
 }), (req, res) => {
@@ -111,14 +118,5 @@ router.get('/profile', passport.authenticate('jwt', {
 		user: req.user
 	});
 })
-
-
-// Connect to MongoDB
-mongoose.connect(process.env.DB_HOST, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-})
-	.then(() => console.log('MongoDB connected.'))
-	.catch(error => console.log(error))
 
 module.exports = router;

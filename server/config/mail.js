@@ -1,50 +1,18 @@
-const express = require('express');
-const cors = require('cors');
 const fetch = require('node-fetch');
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
-const port = process.env.PORT || 5000;
 const dotenv = require('dotenv');
-const passport = require('passport');
-
-const app = express();
-dotenv.config();
-
-// Middleware
-
-app.use(express.json());
-app.use(cors());
-
-app.use(passport.initialize());
-require('./config/passport')(passport);
-
-// Routes
-const assets = require('./routes/api/assets');
-app.use('/api/assets', assets);
-
-const clients = require('./routes/api/clients');
-app.use('/api/clients', clients);
-
-const users = require('./routes/api/users');
-app.use('/api/users', users);
-
-// Handling production
-if(process.env.NODE_ENV === 'production') {
-	// Set static folder
-	app.use(express.static(__dirname + '/public/'));
-
-	// Handle single page app
-	app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'));
-}
+dotenv.config({ path: './server/config/config.env' })
 
 // Scheduled tasks
 // CRON scheduled to run at 07:30 AM on each weekday
+// eslint-disable-next-line no-unused-vars
 const queryDueMaintenance = cron.schedule('00 30 07 * * 1-5', async () => {
 
 // CRON for testing only
 // const queryDueMaintenance = cron.schedule('* * * * *', async () => {
 	console.log("Running a task every X time.");
-	const response = await fetch(`http://localhost:${port}/api/assets`, {
+	const response = await fetch(`http://localhost:${process.env.PORT}/api/assets`, {
 		method:'GET',
 		headers: {
 			'Accept': 'application/json',
@@ -88,6 +56,7 @@ const queryDueMaintenance = cron.schedule('00 30 07 * * 1-5', async () => {
 		html: messageHTML
 
 	};
+// eslint-disable-next-line no-unused-vars
 	transporter.sendMail(mailOptions, function(error, info) {
 		if (error) {
 			throw error;
@@ -110,6 +79,7 @@ let transporter = nodemailer.createTransport({
 	}
 });
 
+// eslint-disable-next-line no-unused-vars
 transporter.verify((error, success) => {
 	if (error) {
 		console.log(error);
@@ -118,4 +88,3 @@ transporter.verify((error, success) => {
 	}
 });
 
-app.listen(port, () => console.log(`Express server started on port ${port}.`))

@@ -2,9 +2,8 @@ sudo: required
 dist: trusty
 language: node_js
 node_js:
-- stable
-services:
-- docker
+  - stable
+
 notifications:
   email:
     recipients:
@@ -12,19 +11,36 @@ notifications:
     on_success: change
     on_failure: always
 
+addons:
+apt:
+  sources:
+  - google-chrome
+  packages:
+  - google-chrome-stable
+before_install:
+- export CHROME_BIN=chromium-browser
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+
+services:
+  -docker
+
+cache: npm
+
 branches:
   only:
     - master
     - development
 
-services:
-  -docker
-
 before_script:
   npm install
 
-script:
-  npm run test
+jobs:
+  include:
+    - stage: Lint
+      script: npm run lint
+    - stage: Test
+      script: npm run test
 
 after_success:
   if [ "$TRAVIS_BRANCH" == "master" ]; then
@@ -32,7 +48,6 @@ after_success:
 
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
 
-    export REPO=danieltiringer/maintenance-program;
-    docker build -f Dockerfile -t $REPO .;
-    docker push $REPO;
+    docker build -f Dockerfile -t "$DOCKER_REPO" .;
+    docker push "$DOCKER_REPO";
   fi
