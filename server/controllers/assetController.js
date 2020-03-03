@@ -115,3 +115,74 @@ exports.updateAsset = (req, res) => {
 			}
 		})
 };
+
+// @route   POST api/assets/:id/maintenance
+// @desc    Add Maintenance
+// @access  Private
+exports.addMaintenance = (req, res) => {
+	Asset.updateOne(
+		{ _id: req.params.id },
+		// { runValidators: true },
+		{
+			$push: {
+				maintenanceLog: {
+					$each: [{
+						date: req.body.date,
+						errorDescription: req.body.errorDescription,
+						maintenanceDescription: req.body.maintenanceDescription,
+						completed: req.body.completed,
+						createdAt: new Date()
+					}],
+					$position: 0
+				},
+			}
+		}
+	)
+		.then(item => res.status(201).json({
+			success: true,
+			data: item
+		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
+			}
+		})
+};
+
+// @route   PUT api/assets/:id/maintenance/:position
+// @desc    Update Maintenance
+// @access  Private
+exports.updateMaintenance = (req, res) => {
+	Asset.updateOne(
+		{ _id: req.params.id },
+		// { runValidators: true },
+		{ $set: { [`maintenanceLog.${req.params.position}`]: req.body } }
+	)
+		.then(item => res.status(200).json({
+			success: true,
+			data: item
+		}))
+		.catch(err => {
+			if (err.name === 'ValidationError') {
+				const messages = Object.values(err.errors).map(val => val.message);
+				return res.status(400).json({
+					success: false,
+					error: messages
+				});
+			} else {
+				return res.status(500).json({
+					success: false,
+					error: 'Server error.'
+				})
+			}
+		})
+};

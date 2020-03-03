@@ -51,14 +51,39 @@ const AssetSchema = new Schema({
 		type: Date,
 		required: [true, 'Please add the Next Scheduled Date.']
 	},
-	maintenanceLog: {
-		type: Array,
-		default: []
-	},
+	maintenanceLog: [
+		{
+			date: {
+				type: Date,
+				required: true
+			},
+			errorDescription: {
+				type: String,
+				required: [true, 'Please add the Error Description'],
+				trim: true
+			},
+			maintenanceDescription: {
+				type: String,
+				trim: true,
+				minlength: 5,
+				required: [completionValidator, 'Please add the Maintenance Description.']
+			},
+			completed: {
+				type: Boolean,
+				required: true,
+				default: false
+			}
+		}
+	],
 	date: {
 		type: Date,
 		default: Date.now()
 	}
 })
+
+function completionValidator() {
+  return this.completed;
+}
+
 // eslint-disable-next-line no-undef
 module.exports = Asset = mongoose.model('assets', AssetSchema)
