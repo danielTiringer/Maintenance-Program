@@ -22,28 +22,28 @@ describe('PUT /api/assets', function() {
 	it('OK, updates record when all fields are present.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"assetId": "door452",
-				"serialNumber": "bestdoor999",
-				"dateOfInstall": "2017/01/24",
-				"zip": "2030",
-				"city": "Erd",
-				"address": "Bella u. 8",
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "annual",
-				"nextScheduledDate": "2020/02/28"
+				'assetId': 'door452',
+				'serialNumber': 'bestdoor999',
+				'dateOfInstall': '2017/01/24',
+				'zip': '2030',
+				'city': 'Erd',
+				'address': 'Bella u. 8',
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'annual',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then(res => {
 				request(app).put(`/api/assets/${res.body.data._id}`)
 					.send({
-						"assetId": "door123",
-						"serialNumber": "bestdoor999",
-						"dateOfInstall": "2017/01/24",
-						"zip": "2030",
-						"city": "Erd",
-						"address": "Bella u. 8",
-						"description": "Back door of the supermarket",
-						"maintenanceSchedule": "semi-annual",
-						"nextScheduledDate": "2020/02/28"
+						'assetId': 'door123',
+						'serialNumber': 'bestdoor999',
+						'dateOfInstall': '2017/01/24',
+						'zip': '2030',
+						'city': 'Erd',
+						'address': 'Bella u. 8',
+						'description': 'Back door of the supermarket',
+						'maintenanceSchedule': 'semi-annual',
+						'nextScheduledDate': '2020/02/28'
 					})
 					.then(response => {
 						expect(response.status).to.equal(200);
@@ -57,28 +57,28 @@ describe('PUT /api/assets', function() {
 	it('Fail, all values are needed in order to process the update.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"assetId": "door452",
-				"serialNumber": "bestdoor999",
-				"dateOfInstall": "2017/01/24",
-				"zip": "2030",
-				"city": "Erd",
-				"address": "Bella u. 8",
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "annual",
-				"nextScheduledDate": "2020/02/28"
+				'assetId': 'door452',
+				'serialNumber': 'bestdoor999',
+				'dateOfInstall': '2017/01/24',
+				'zip': '2030',
+				'city': 'Erd',
+				'address': 'Bella u. 8',
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'annual',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then(res => {
 				request(app).put(`/api/assets/${res.body.data._id}`)
 					.send({
-						"assetId": "door123",
-						"serialNumber": "bestdoor999",
-						"dateOfInstall": "2017/01/24",
-						"zip": "2030",
-						"city": "Erd",
-						"address": "Bella u. 8",
-						"description": "Back door of the supermarket",
-						"maintenanceSchedule": "",
-						"nextScheduledDate": "2020/02/28"
+						'assetId': 'door123',
+						'serialNumber': 'bestdoor999',
+						'dateOfInstall': '2017/01/24',
+						'zip': '2030',
+						'city': 'Erd',
+						'address': 'Bella u. 8',
+						'description': 'Back door of the supermarket',
+						'maintenanceSchedule': '',
+						'nextScheduledDate': '2020/02/28'
 					})
 					.then(response => {
 						expect(response.status).to.equal(400);

@@ -6,7 +6,7 @@ const request = require('supertest');
 const app = require('../../../server/app.js');
 const conn = require('../../../server/config/db.js');
 
-describe('DELETE /api/assets', function() {
+describe('DELETE /api/clients', function() {
 	before(async function() {
 		await conn.connect()
 			// .then(() => console.log('MongoMemory connected.'))
@@ -19,28 +19,20 @@ describe('DELETE /api/assets', function() {
 			.catch((err) => console.log(err));
 	})
 
-	it('OK, deleting removes the asset.', function(done) {
-		request(app).post('/api/assets')
+	it('OK, deleting removes the client.', function(done) {
+		request(app).post('/api/clients')
 			.send({
-				'assetId': 'door452',
-				'serialNumber': 'bestdoor999',
-				'dateOfInstall': '2017/01/24',
-				'zip': '2030',
-				'city': 'Erd',
-				'address': 'Bella u. 8',
-				'description': 'Back door of the supermarket',
-				'maintenanceSchedule': 'annual',
-				'nextScheduledDate': '2020/02/28'
+				'name': 'Tesco'
 			})
 			.then((res) => {
-				request(app).delete(`/api/assets/${res.body.data._id}`)
+				request(app).delete(`/api/clients/${res.body.data._id}`)
 				.then((res) => {
 					expect(res.status).to.equal(200);
 					expect(res.body.success).to.equal(true);
 					expect(res.body.data).to.be.an('object');
 					expect(Object.keys(res.body.data).length).to.equal(0);
 
-					request(app).get('/api/assets')
+					request(app).get('/api/clients')
 						.then((res) => {
 							expect(res.status).to.equal(200);
 							expect(res.body.data.length).to.equal(0);
@@ -52,7 +44,7 @@ describe('DELETE /api/assets', function() {
 	})
 
 	it('OK, deleting an invalid id gives a cast error.', function(done) {
-	request(app).delete('/api/assets/111')
+	request(app).delete('/api/clients/111')
 		.then((res) => {
 			expect(res.status).to.equal(404);
 			expect(res.body.success).to.equal(false);
@@ -64,7 +56,7 @@ describe('DELETE /api/assets', function() {
 	})
 
 	it(`OK, deleting valid id that doesn't exist gives an error.`, function(done) {
-	request(app).delete('/api/assets/5e5cfee3747654339f5ecb77')
+	request(app).delete('/api/assets/5e5e1d19a53de8a7f0531db2')
 		.then((res) => {
 			expect(res.status).to.equal(404);
 			expect(res.body.success).to.equal(false);
@@ -76,4 +68,3 @@ describe('DELETE /api/assets', function() {
 	})
 
 })
-
