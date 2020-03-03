@@ -11,13 +11,13 @@ const conn = require('../../../server/config/db.js');
 describe('POST /api/assets', function() {
 	before(async function() {
 		await conn.connect()
-			.then(() => console.log('MongoMemory connected.'))
+			// .then(() => console.log('MongoMemory connected.'))
 			.catch((err) => console.log(err));
 	})
 
 	after(async function() {
 		await conn.close()
-			.then(() => console.log('MongoMemory disconnected.'))
+			// .then(() => console.log('MongoMemory disconnected.'))
 			.catch((err) => console.log(err));
 	})
 
