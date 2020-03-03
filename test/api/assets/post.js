@@ -24,15 +24,15 @@ describe('POST /api/assets', function() {
 	it('OK, new asset has correct fields and status code.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"assetId": "door452",
-				"serialNumber": "bestdoor999",
-				"dateOfInstall": "2017/01/24",
-				"zip": "2030",
-				"city": "Erd",
-				"address": "Bella u. 8",
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "annual",
-				"nextScheduledDate": "2020/02/28"
+				'assetId': 'door452',
+				'serialNumber': 'bestdoor999',
+				'dateOfInstall': '2017/01/24',
+				'zip': '2030',
+				'city': 'Erd',
+				'address': 'Bella u. 8',
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'annual',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then((res) => {
 				expect(res).to.be.an('object')
@@ -68,9 +68,9 @@ describe('POST /api/assets', function() {
 	it('Fail, asset requires values. Displays correct errors.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "annual",
-				"nextScheduledDate": "2020/02/28"
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'annual',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then((res) => {
 				expect(res.status).to.equal(400);
@@ -89,15 +89,15 @@ describe('POST /api/assets', function() {
 	it('Fail, maintenance schedule has to be annual or semi-annual.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"assetId": true,
-				"serialNumber": "bestdoor999",
-				"dateOfInstall": "2017/01/24",
-				"zip": "2030",
-				"city": "Erd",
-				"address": "Bella u. 8",
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "weekly",
-				"nextScheduledDate": "2020/02/28"
+				'assetId': true,
+				'serialNumber': 'bestdoor999',
+				'dateOfInstall': '2017/01/24',
+				'zip': '2030',
+				'city': 'Erd',
+				'address': 'Bella u. 8',
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'weekly',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then((res) => {
 				expect(res.status).to.equal(400);
@@ -110,15 +110,15 @@ describe('POST /api/assets', function() {
 	it('Fail, zip code has to be 4 digits long.', function(done) {
 		request(app).post('/api/assets')
 			.send({
-				"assetId": true,
-				"serialNumber": "bestdoor999",
-				"dateOfInstall": "2017/01/24",
-				"zip": "20301",
-				"city": "Erd",
-				"address": "Bella u. 8",
-				"description": "Back door of the supermarket",
-				"maintenanceSchedule": "annual",
-				"nextScheduledDate": "2020/02/28"
+				'assetId': true,
+				'serialNumber': 'bestdoor999',
+				'dateOfInstall': '2017/01/24',
+				'zip': '20301',
+				'city': 'Erd',
+				'address': 'Bella u. 8',
+				'description': 'Back door of the supermarket',
+				'maintenanceSchedule': 'annual',
+				'nextScheduledDate': '2020/02/28'
 			})
 			.then((res) => {
 				expect(res.status).to.equal(400);
