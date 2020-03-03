@@ -12,25 +12,25 @@ describe('POST /api/users/register', function() {
 	// eslint-disable-next-line
 	before(async function() {
 		await conn.connect()
-			.then(() => console.log('MongoMemory connected.'))
+			// .then(() => console.log('MongoMemory connected.'))
 			.catch((err) => console.log(err));
 	})
 
 	// eslint-disable-next-line
 	after(async function() {
 		await conn.close()
-			.then(() => console.log('MongoMemory disconnected.'))
+			// .then(() => console.log('MongoMemory disconnected.'))
 			.catch((err) => console.log(err));
 	})
 
 	it('OK, successfully register with proper data.', function(done) {
 		request(app).post('/api/users/register')
 			.send({
-				"name": "Test User",
-				"username": "testuser",
-				"email": "testuser@gmail.com",
-				"password": "Test1234",
-				"confirm_password": "Test1234"
+				'name': 'Test User',
+				'username': 'testuser',
+				'email': 'testuser@gmail.com',
+				'password': 'Test1234',
+				'confirm_password': 'Test1234'
 			})
 			.then((res) => {
 				expect(res).to.be.an('object')
@@ -46,11 +46,11 @@ describe('POST /api/users/register', function() {
 	it(`Fail, register error if passwords don't match.`, function(done) {
 		request(app).post('/api/users/register')
 			.send({
-				"name": "Test User 2",
-				"username": "testuser2",
-				"email": "testuser2@gmail.com",
-				"password": "Test1234",
-				"confirm_password": "Test2345"
+				'name': 'Test User 2',
+				'username': 'testuser2',
+				'email': 'testuser2@gmail.com',
+				'password': 'Test1234',
+				'confirm_password': 'Test2345'
 			})
 			.then((res) => {
 				expect(res).to.be.an('object')
@@ -65,20 +65,20 @@ describe('POST /api/users/register', function() {
 	it(`Fail, register error if username already in use.`, function(done) {
 		request(app).post('/api/users/register')
 			.send({
-				"name": "Test User 3",
-				"username": "testuser3",
-				"email": "testuser3@gmail.com",
-				"password": "Test1234",
-				"confirm_password": "Test1234"
+				'name': 'Test User 3',
+				'username': 'testuser3',
+				'email': 'testuser3@gmail.com',
+				'password': 'Test1234',
+				'confirm_password': 'Test1234'
 			})
 			.then(() => {
 				request(app).post('/api/users/register')
 					.send({
-						"name": "Test User 4",
-						"username": "testuser3",
-						"email": "testuser4@gmail.com",
-						"password": "Test1234",
-						"confirm_password": "Test1234"
+						'name': 'Test User 4',
+						'username': 'testuser3',
+						'email': 'testuser4@gmail.com',
+						'password': 'Test1234',
+						'confirm_password': 'Test1234'
 					})
 					.then(res => {
 						expect(res).to.be.an('object');
@@ -95,20 +95,20 @@ describe('POST /api/users/register', function() {
 	it(`Fail, register error if username already in use.`, function(done) {
 		request(app).post('/api/users/register')
 			.send({
-				"name": "Test User 5",
-				"username": "testuser5",
-				"email": "testuser5@gmail.com",
-				"password": "Test1234",
-				"confirm_password": "Test1234"
+				'name': 'Test User 5',
+				'username': 'testuser5',
+				'email': 'testuser5@gmail.com',
+				'password': 'Test1234',
+				'confirm_password': 'Test1234'
 			})
 			.then(() => {
 				request(app).post('/api/users/register')
 					.send({
-						"name": "Test User 6",
-						"username": "testuser6",
-						"email": "testuser5@gmail.com",
-						"password": "Test1234",
-						"confirm_password": "Test1234"
+						'name': 'Test User 6',
+						'username': 'testuser6',
+						'email': 'testuser5@gmail.com',
+						'password': 'Test1234',
+						'confirm_password': 'Test1234'
 					})
 					.then(res => {
 						expect(res).to.be.an('object')
