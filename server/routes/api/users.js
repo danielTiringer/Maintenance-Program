@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const { registerUser, loginUser, getUserProfile } = require('../../controllers/userController');
+const { registerUser, loginUser, authenticateToken, getUserProfile } = require('../../controllers/userController');
 
 // User endpoints
 
@@ -15,6 +14,6 @@ router
 
 router
 	.route('/profile')
-	.get(passport.authenticate('jwt', { session: false }), getUserProfile)
+	.get(authenticateToken, getUserProfile)
 
 module.exports = router;

@@ -102,7 +102,9 @@ exports.loginUser = (req, res) => {
 				})
 		})
 }
-// eslint-disable-next-line
+
+exports.authenticateToken = passport.authenticate('jwt', { session: false })
+
 exports.getUserProfile = (req, res) => {
 	return res.json({
 		success: true,
