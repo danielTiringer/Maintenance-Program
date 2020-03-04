@@ -1,5 +1,4 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const {
 	getAssets,
 	addAsset,
@@ -9,11 +8,8 @@ const {
 	addMaintenance,
 	updateMaintenance
 } = require('../../controllers/assetController');
-// const { addMaintenance, updateMaintenance } = require('../../controllers/maintenanceController');
 
 const router = express.Router();
-
-dotenv.config({ path: './server/config/config.env' });
 
 // Main Asset Endpoints
 

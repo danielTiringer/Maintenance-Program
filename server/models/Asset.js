@@ -59,14 +59,14 @@ const AssetSchema = new Schema({
 			},
 			errorDescription: {
 				type: String,
-				required: [true, 'Please add the Error Description'],
+				required: [completionValidator, 'Please add the Error Description'],
 				trim: true
 			},
 			maintenanceDescription: {
 				type: String,
 				trim: true,
 				minlength: 5,
-				required: [completionValidator, 'Please add the Maintenance Description.']
+				required: [true, 'Please add the Maintenance Description.']
 			},
 			completed: {
 				type: Boolean,
